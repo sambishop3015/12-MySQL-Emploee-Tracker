@@ -1,0 +1,23 @@
+{
+  "name": "12-mysql-emploee-tracker",
+  "version": "1.0.0",
+  "description": "Employee tracker application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sambishop3015/12-MySQL-Emploee-Tracker.git"
+  },
+  "author": "Sam Bishop",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sambishop3015/12-MySQL-Emploee-Tracker/issues"
+  },
+  "homepage": "https://github.com/sambishop3015/12-MySQL-Emploee-Tracker#readme",
+  "dependencies": {
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  }
+}
