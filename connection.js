@@ -35,6 +35,7 @@ function runSearch() {
         "View departments",
         "View roles",
         "View employees",
+        "View employees by manager",
         "Update employee's role",
         "Update employee's manager",
         "Exit"
@@ -66,6 +67,10 @@ function runSearch() {
           employeesRead();
           break;
 
+        case "View employees by manager":
+          employeesByManagerRead();
+          break;
+
         case "Update employee's role":
           employeesRoleUpdate();
           break;
@@ -73,7 +78,7 @@ function runSearch() {
         case "Update employee's manager":
           employeesManagerUpdate();
           break;
-
+          
         case "Exit":
           connection.end();
           break;
@@ -264,3 +269,23 @@ function employeesManagerUpdate() {
           });
       });
   }
+
+  function employeesByManagerRead() {
+    //function departmentRead() {
+      inquirer
+        .prompt(
+          {
+            name: "manager_id",
+            type: "input",
+            message: "Which manager to view by?"
+          })
+        .then(function (answer) {
+          connection.query("SELECT * FROM employee WHERE manager_id = ?", [answer.manager_id],
+            function (err, res) {
+              if (err) throw err;
+              console.log("Employees by manager ID: " + answer.manager_id);
+              console.table(res);
+              runSearch();
+            });
+        });
+    };
