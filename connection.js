@@ -22,13 +22,16 @@ connection.connect(function (err) {
   runSearch();
 });
 
+let departmentArray = [];
+
 function runSearch() {
   inquirer
     .prompt({
       name: "action",
-      type: "rawlist",
+      type: "list",
       message: "What would you like to do?",
       choices: [
+        "View department array",
         "Add department",
         "Add role",
         "Add employee",
@@ -61,6 +64,10 @@ function runSearch() {
 
         case "View departments":
           departmentRead();
+          break;
+
+        case "View department array":
+          makeDepartmentArray();
           break;
 
         case "View roles":
@@ -139,8 +146,10 @@ function roleCreate() {
       },
       {
         type: 'input',
+        //type: 'list',
         message: 'Department ID?',
-        name: "department_id"
+        name: "department_id",
+        //choices: departmentArray
       }
     ])
     .then(function (answer) {
@@ -384,3 +393,18 @@ function departmentBudgetView() {
         });
     });
 }
+
+
+function makeDepartmentArray() {
+  connection.query("SELECT department FROM department",
+    function (err, res) {
+      if (err) throw err;
+      //let array;
+      for (var i = 0; i < res.length; i++) {
+        let dept = res[i].department;
+        departmentArray.push(dept);
+      }
+      console.log(departmentArray);
+      runSearch();
+    });
+};
