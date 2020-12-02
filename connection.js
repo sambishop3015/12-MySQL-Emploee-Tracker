@@ -36,8 +36,12 @@ function runSearch() {
         "View roles",
         "View employees",
         "View employees by manager",
+        "View department budget",
         "Update employee's role",
         "Update employee's manager",
+        "DELETE a department",
+        "DELETE a role",
+        "DELETE a employee",
         "Exit"
       ]
     })
@@ -71,6 +75,10 @@ function runSearch() {
           employeesByManagerRead();
           break;
 
+        case "View department budget":
+          departmentBudgetView();
+          break;
+
         case "Update employee's role":
           employeesRoleUpdate();
           break;
@@ -78,7 +86,19 @@ function runSearch() {
         case "Update employee's manager":
           employeesManagerUpdate();
           break;
-          
+
+        case "DELETE a department":
+          departmentDelete();
+          break;
+
+        case "DELETE a role":
+          roleDelete();
+          break;
+
+        case "DELETE a employee":
+          employeeDelete();
+          break;
+
         case "Exit":
           connection.end();
           break;
@@ -188,26 +208,26 @@ function departmentRead() {
 }
 
 function rolesRead() {
-  connection.query("SELECT role_id, role, salary, department FROM role LEFT JOIN department ON role.department_id=department.department_id", 
+  connection.query("SELECT role_id, role, salary, department FROM role LEFT JOIN department ON role.department_id=department.department_id",
     function (err, res) {
-    if (err) throw err;
-    console.table(res);
-    runSearch();
-  })
+      if (err) throw err;
+      console.table(res);
+      runSearch();
+    })
 }
 
 function employeesRead() {
   //var query = "SELECT id, first_name, last_name, role_id, manager_id FROM employee ORDER BY id";
-  connection.query("SELECT id, first_name, last_name, role, salary, manager_id FROM employee LEFT JOIN role ON employee.role_id=role.role_id", 
+  connection.query("SELECT id, first_name, last_name, role, salary, manager_id FROM employee LEFT JOIN role ON employee.role_id=role.role_id",
     function (err, res) {
-    if (err) throw err;
-    console.table(res);
-    runSearch();
-  })
+      if (err) throw err;
+      console.table(res);
+      runSearch();
+    })
 }
 
 function employeesRoleUpdate() {
-//function departmentRead() {
+  //function departmentRead() {
   inquirer
     .prompt([
       {
@@ -218,7 +238,7 @@ function employeesRoleUpdate() {
       {
         name: "role_id",
         type: "input",
-        message: "What role to change to?"
+        message: "What role ID to change to?"
       }
     ])
     .then(function (answer) {
@@ -240,52 +260,127 @@ function employeesRoleUpdate() {
 
 function employeesManagerUpdate() {
   //function departmentRead() {
-    inquirer
-      .prompt([
+  inquirer
+    .prompt([
+      {
+        name: "employee_id",
+        type: "input",
+        message: "Which employee ID?"
+      },
+      {
+        name: "manager_id",
+        type: "input",
+        message: "What manager ID to change to?"
+      }
+    ])
+    .then(function (answer) {
+      connection.query("UPDATE employee SET ? WHERE ?", [
         {
-          name: "employee_id",
-          type: "input",
-          message: "Which employee?"
+          manager_id: answer.manager_id
         },
         {
-          name: "manager_id",
-          type: "input",
-          message: "What manager to change to?"
+          id: answer.employee_id
         }
-      ])
-      .then(function (answer) {
-        connection.query("UPDATE employee SET ? WHERE ?", [
-          {
-            manager_id: answer.manager_id
-          },
-          {
-            id: answer.employee_id
-          }
-        ],
-          function (err) {
-            if (err) throw err;
-            console.log("Employee ID: " + answer.employee_id + " changed to manager ID: " + answer.manager_id);
-            runSearch();
-          });
-      });
-  }
-
-  function employeesByManagerRead() {
-    //function departmentRead() {
-      inquirer
-        .prompt(
-          {
-            name: "manager_id",
-            type: "input",
-            message: "Which manager to view by?"
-          })
-        .then(function (answer) {
-          connection.query("SELECT * FROM employee WHERE manager_id = ?", [answer.manager_id],
-            function (err, res) {
-              if (err) throw err;
-              console.log("Employees by manager ID: " + answer.manager_id);
-              console.table(res);
-              runSearch();
-            });
+      ],
+        function (err) {
+          if (err) throw err;
+          console.log("Employee ID: " + answer.employee_id + " changed to manager ID: " + answer.manager_id);
+          runSearch();
         });
-    };
+    });
+}
+
+function employeesByManagerRead() {
+  //function departmentRead() {
+  inquirer
+    .prompt(
+      {
+        name: "manager_id",
+        type: "input",
+        message: "Which manager ID to view by?"
+      })
+    .then(function (answer) {
+      connection.query("SELECT * FROM employee WHERE manager_id = ?", [answer.manager_id],
+        function (err, res) {
+          if (err) throw err;
+          console.log("Employees displayed by manager ID: " + answer.manager_id);
+          console.table(res);
+          runSearch();
+        });
+    });
+};
+
+function departmentDelete() {
+  inquirer
+    .prompt(
+      {
+        name: "department_id",
+        type: "input",
+        message: "Which department ID to DELETE?"
+      })
+    .then(function (answer) {
+      connection.query("DELETE FROM department WHERE department_id = ?", [answer.department_id],
+        function (err) {
+          if (err) throw err;
+          console.log("Department ID: " + answer.department_id + " DELETED!");
+          runSearch();
+        });
+    });
+};
+
+function roleDelete() {
+  inquirer
+    .prompt(
+      {
+        name: "role_id",
+        type: "input",
+        message: "Which role ID to DELETE?"
+      })
+    .then(function (answer) {
+      connection.query("DELETE FROM role WHERE role_id = ?", [answer.role_id],
+        function (err) {
+          if (err) throw err;
+          console.log("Role ID: " + answer.role_id + " DELETED!");
+          runSearch();
+        });
+    });
+};
+
+function employeeDelete() {
+  inquirer
+    .prompt(
+      {
+        name: "id",
+        type: "input",
+        message: "Which employee ID to DELETE?"
+      })
+    .then(function (answer) {
+      connection.query("DELETE FROM employee WHERE id = ?", [answer.id],
+        function (err, res) {
+          if (err) throw err;
+          console.log("Employee ID: " + answer.id + " DELETED!");
+          runSearch();
+        });
+    });
+};
+
+function departmentBudgetView() {
+  inquirer
+    .prompt({
+      name: "department_id",
+      type: "input",
+      message: "View budge => Department ID:"
+    })
+    .then(function (answer) {
+      connection.query("SELECT salary FROM role WHERE department_id = ?", [answer.department_id],
+        function (err, res) {
+          if (err) throw err;
+          let budget = 0;
+          for (var i = 0; i < res.length; i++) {
+            budget += res[i].salary;
+          }
+          console.log("$" + budget);
+          runSearch();
+        });
+    });
+}
