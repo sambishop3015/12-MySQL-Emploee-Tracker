@@ -3,16 +3,18 @@ CREATE database employee_trackerDB;
 
 -- Work in this database
 USE employee_trackerDB;
+
 -- Create new table
 CREATE TABLE department (
   -- Typically id INT NOT NULL AUTO-INCREMENT
-  id INT NOT NULL UNSIGNED AUTO-INCREMENT PRIMARY KEY,
-  name VARCHAR(30) UNIQUE NOT NULL
+  department_id INT NOT NULL UNSIGNED AUTO-INCREMENT PRIMARY KEY,
+  department VARCHAR(30) UNIQUE NOT NULL
 );
 
+-- Create new table
 CREATE TABLE role (
   -- Typically id INT NOT NULL AUTO-INCREMENT
-  id INT NOT NULL UNSIGNED AUTO-INCREMENT PRIMARY KEY,
+  role_id INT NOT NULL UNSIGNED AUTO-INCREMENT PRIMARY KEY,
   title VARCHAR(30) UNIQUE NOT NULL,
   salary DECIMAL UNSIGNED NOT NULL,
   department_id INT UNSIGNED NOT NULL,
@@ -20,6 +22,7 @@ CREATE TABLE role (
   CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
 );
 
+-- Create new table
 CREATE TABLE employee (
   -- Typically id INT NOT NULL AUTO-INCREMENT
   id INT NOT NULL AUOT-INCREMENT UNSIGNED PRIMARY KEY,
@@ -32,5 +35,3 @@ CREATE TABLE employee (
   INDEX man_ind (manager_id),
   CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES manager(id) ON DELETE SET NULL
 );
--- Open all rows (*) from this table
--- SELECT * FROM top5000;

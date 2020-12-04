@@ -1,8 +1,9 @@
+// Dependancies
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-//var app = require('./index')
 require('console.table');
 
+// Connection
 var connection = mysql.createConnection({
   host: "localhost",
 
@@ -22,8 +23,7 @@ connection.connect(function (err) {
   runSearch();
 });
 
-let departmentArray = [];
-
+// Main Prompts
 function runSearch() {
   inquirer
     .prompt({
@@ -31,7 +31,7 @@ function runSearch() {
       type: "list",
       message: "What would you like to do?",
       choices: [
-        "View department array",
+        //"View department array",
         "Add department",
         "Add role",
         "Add employee",
@@ -55,7 +55,7 @@ function runSearch() {
           break;
 
         case "Add role":
-          roleCreate();
+          makeDepartmentArray();
           break;
 
         case "Add employee":
@@ -113,6 +113,7 @@ function runSearch() {
     });
 };
 
+// Create a department
 function departmentCreate() {
   inquirer
     .prompt({
@@ -130,8 +131,12 @@ function departmentCreate() {
     })
 };
 
+// For prompting departments
+let departmentArray = [];
 
+// Create a role
 function roleCreate() {
+  //const choices = await makeDepartmentArray();
   inquirer
     .prompt([
       {
@@ -149,15 +154,25 @@ function roleCreate() {
         //type: 'list',
         message: 'Department ID?',
         name: "department_id",
+        //name: "department",
         //choices: departmentArray
       }
     ])
     .then(function (answer) {
+      // let id;
+
+      // connection.query('SELECT * FROM department WHERE department = ?'), [answer.department],
+      //   function (err, res) {
+      //     if (err) throw err;
+      //     id = res.department_id;
+      //   }
+
       connection.query('INSERT INTO role SET ?',
         {
           role: answer.role,
           salary: answer.salary,
           department_id: answer.department_id
+          //department_id: id
         },
         function (err) {
           if (err) throw err;
@@ -167,6 +182,7 @@ function roleCreate() {
     })
 }
 
+// Create an Employee
 function employeeCreate() {
   inquirer
     .prompt([
@@ -207,6 +223,7 @@ function employeeCreate() {
     });
 }
 
+// View Departments
 function departmentRead() {
   var query = "SELECT department_id, department FROM department ORDER BY department_id";
   connection.query(query, function (err, res) {
@@ -216,6 +233,7 @@ function departmentRead() {
   })
 }
 
+// View Roles
 function rolesRead() {
   connection.query("SELECT role_id, role, salary, department FROM role LEFT JOIN department ON role.department_id=department.department_id",
     function (err, res) {
@@ -225,6 +243,7 @@ function rolesRead() {
     })
 }
 
+// View Employees
 function employeesRead() {
   //var query = "SELECT id, first_name, last_name, role_id, manager_id FROM employee ORDER BY id";
   connection.query("SELECT id, first_name, last_name, role, salary, manager_id FROM employee LEFT JOIN role ON employee.role_id=role.role_id",
@@ -235,6 +254,7 @@ function employeesRead() {
     })
 }
 
+// Update Employee Role
 function employeesRoleUpdate() {
   //function departmentRead() {
   inquirer
@@ -267,6 +287,7 @@ function employeesRoleUpdate() {
     });
 }
 
+// Update Employee Manager
 function employeesManagerUpdate() {
   //function departmentRead() {
   inquirer
@@ -299,6 +320,7 @@ function employeesManagerUpdate() {
     });
 }
 
+// View Employees by Manager
 function employeesByManagerRead() {
   //function departmentRead() {
   inquirer
@@ -319,6 +341,7 @@ function employeesByManagerRead() {
     });
 };
 
+// Delete a Department
 function departmentDelete() {
   inquirer
     .prompt(
@@ -337,6 +360,7 @@ function departmentDelete() {
     });
 };
 
+// Delete a Role
 function roleDelete() {
   inquirer
     .prompt(
@@ -355,6 +379,7 @@ function roleDelete() {
     });
 };
 
+// Delete an Employee
 function employeeDelete() {
   inquirer
     .prompt(
@@ -373,6 +398,7 @@ function employeeDelete() {
     });
 };
 
+// View a Department's Salary Budget
 function departmentBudgetView() {
   inquirer
     .prompt({
@@ -394,7 +420,7 @@ function departmentBudgetView() {
     });
 }
 
-
+// Creare a Department Array for "Optional" Use in Inquirer Prompts
 function makeDepartmentArray() {
   connection.query("SELECT department FROM department",
     function (err, res) {
@@ -404,7 +430,7 @@ function makeDepartmentArray() {
         let dept = res[i].department;
         departmentArray.push(dept);
       }
-      console.log(departmentArray);
-      runSearch();
+      //console.log(departmentArray);
+      roleCreate();
     });
 };
